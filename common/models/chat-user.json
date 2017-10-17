@@ -1,0 +1,24 @@
+{
+  "name": "ChatUser",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "nickName": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "chatRooms": {
+      "type": "hasMany",
+      "model": "ChatRoom",
+      "foreignKey": "",
+      "through": "ChatRoomUserLink"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

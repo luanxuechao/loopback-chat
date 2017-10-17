@@ -1,0 +1,44 @@
+{
+  "name": "ChatRoom",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "hidden": [
+    "creatorId"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "creatorId": {
+      "type": "string",
+      "required": true
+    },
+    "createdAt": {
+      "type": "date",
+      "defaultFn": "now"
+    },
+    "updatedAt": {
+      "type": "date"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "chatMessages": {
+      "type": "hasMany",
+      "model": "ChatMessage",
+      "foreignKey": ""
+    },
+    "chatUsers": {
+      "type": "hasMany",
+      "model": "ChatUser",
+      "foreignKey": "",
+      "through": "ChatRoomUserLink"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

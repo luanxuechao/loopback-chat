@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>案例展示</title>
+    <style type="text/css">
+      #app {
+        font-family: 'Avenir', Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-align: center;
+        color: #2c3e50;
+        margin-top: 60px;
+      }
+
+      h1, h2 {
+        font-weight: normal;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      li {
+        display: inline-block;
+        margin: 0 10px;
+      }
+
+      a {
+        color: #42b983;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="hello">
+        <h1>API Examples 案例</h1>
+        <h2>聊天相关</h2>
+        <ul>
+        <% if(contractorUsers.length > 0) { %>
+            <% contractorUsers.forEach(function(contractorUser) { %>
+          <li><a href="/chat/user/<%=contractorUser.id %>/rooms" target="_blank"><%= contractorUser.nickName %></a></li>
+          <%})}%>
+        </ul>
+      </div>
+    </div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>

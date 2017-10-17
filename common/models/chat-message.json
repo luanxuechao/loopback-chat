@@ -1,0 +1,32 @@
+{
+  "name": "ChatMessage",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "messageContent": {
+      "type": "string",
+      "required": true
+    },
+    "chatRoomId": {
+      "type": "string",
+      "required": true
+    },
+    "remark": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "date",
+      "defaultFn": "now"
+    },
+    "updatedAt": {
+      "type": "date"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

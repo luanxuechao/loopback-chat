@@ -1,0 +1,38 @@
+{
+  "name": "ChatRoomUserLink",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "lastObtentionMsgTime": {
+      "type": "date",
+      "required": true
+    },
+    "status": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    },
+    "createdAt": {
+      "type": "date",
+      "defaultFn": "now"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "chatRoom": {
+      "type": "belongsTo",
+      "model": "ChatRoom",
+      "foreignKey": ""
+    },
+    "chatUser": {
+      "type": "belongsTo",
+      "model": "ChatUser",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

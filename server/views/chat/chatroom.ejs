@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chat IO</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css'>
+</head>
+
+<body>
+    <a href="https://github.com/OmarElGabry/chat.io" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+    <div class="container clearfix">
+        <div class="chat">
+            <div class="chat-header clearfix">
+                <img src="/img/user.jpg" alt="avatar">
+                <div class="chat-about">
+                    <div class="chat-room">
+                        Room: <%= room.name %> (id <%= room.id %>)
+                    </div>
+                    <div class="chat-num-users"> User (id <%= userId %>)</div>
+                </div>
+                <i class="fa fa-users"></i>
+            </div>
+            <!-- end chat-header -->
+
+            <div class="chat-history">
+                <ul>
+                </ul>
+            </div>
+            <!-- end chat-history -->
+
+            <div class="chat-message clearfix">
+                <textarea name="message" placeholder="Type your message" rows="3"></textarea>
+                <button onclick="send()">Send</button>
+            </div>
+            <!-- end chat-message -->
+        </div>
+        <!-- end chat -->
+
+        <div class="controls">
+            <a href="/" class="logout-btn">Logout</a>
+            <a href="/chat/user/<%= userId %>/rooms" class="rooms-btn">Rooms</a>
+        </div>
+
+        <div class="users-list">
+            <ul class="list">
+                    <% if(room.chatRoomUserLinks.length > 0) { %>
+                        <% room.chatRoomUserLinks.forEach(function(chatRoomUserLinks) { %>
+                            <li class="clearfix">
+                                <%= chatRoomUserLinks.status%>
+                                <img src="/img/user.png"/>
+                                <div class="about">
+                                    <div class="name"><%- chatRoomUserLinks.chatUserId %></div>
+                                    <div class="status"><i class="fa fa-circle online"></i> online</div>
+                                </div>
+                            </li>
+                         <% }) }%>
+            </ul>
+        </div>
+    </div>
+    <!-- end container -->
+    <script src="https://cdn.bootcss.com/socket.io/2.0.3/socket.io.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.js"></script>
+    <script>
+    var listen = null;
+    function connect(room_id){
+        var socket = io('/chat',{transports: ['websocket'] });
+            socket.on('connect', () => {
+            console.log(socket.id);
+            listen  = socket;
+            socket.emit('joinRoom', room_id,function(result){
+
+            });
+            socket.emit('joinRooms', [],function(result){
+
+            });
+            socket.on('message',function(data){
+                addMessage(data);
+            })
+            });
+    }
+    $(function(){
+        var roomId ='<%= room.id %>';
+        connect(roomId);
+    });
+    function getChatUser(userId){
+        var chatUserList  =  JSON.parse('<%- JSON.stringify(room.chatRoomUserLinks)%>');
+        for (var i in chatUserList) {
+            if (chatUserList[i].chatUser.id == userId) {
+                return chatUserList[i];
+            }
+        }
+        return null;
+    }
+
+    function addMessage (message){
+      message.date      = (new Date(message.createdAt)).toLocaleString();
+      var user = getChatUser(message.userId);
+      message.username  = encodeHTML(message.userId);
+      message.content   = encodeHTML(message.messageContent);
+
+      var html = `<li>
+                    <div class="message-data">
+                      <span class="message-data-name">${message.username}</span>
+                      <span class="message-data-time">${message.date}</span>
+                    </div>
+                    <div class="message my-message" dir="auto">${message.content}</div>
+                  </li>`;
+      $(html).hide().appendTo('.chat-history ul').slideDown(200);
+      // Keep scroll bar down
+      $(".chat-history").animate({ scrollTop: $('.chat-history')[0].scrollHeight}, 1000);
+    }
+    function send(){
+        var textareaEle = $("textarea[name='message']");
+          var messageContent = textareaEle.val().trim();
+        var data = {userId:'<%= userId %>',
+        chatRoomId:'<%= room.id %>',
+        messageContent:messageContent,
+        messageType:'MESSAGE'}
+        listen.emit('message',data,function(data){
+            addMessage(data);
+        })
+    }
+     function encodeHTML(str){
+      return $('<div />').text(str).html();
+    }
+    </script>
+</body>
+
+</html>

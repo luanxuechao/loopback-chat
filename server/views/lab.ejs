@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>案例展示</title>
+    <style type="text/css">
+      #app {
+        font-family: 'Avenir', Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-align: center;
+        color: #2c3e50;
+        margin-top: 60px;
+      }
+
+      h1, h2 {
+        font-weight: normal;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      li {
+        display: inline-block;
+        margin: 0 10px;
+      }
+
+      a {
+        color: #42b983;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="hello">
+        <h1>API Examples 案例</h1>
+        <h2>文档链接</h2>
+        <ul>
+          <li><a href="/explorer" target="_blank">API 文档链接</a></li>
+        </ul>
+        <h2>聊天相关</h2>
+        <ul>
+          <li><a href="/chat/userList" target="_blank">聊天用户1</a></li>
+        </ul>
+        <h2>地理位置相关</h2>
+        <ul>
+          <li><a href="/example/track" target="_blank">定位示例</a></li>
+        </ul>
+        <h2>角色权限相关</h2>
+        <ul>
+          <li><a href="/role" target="_blank">角色权限</a></li>
+        </ul>
+        <h4>当前环境: <%= process.env.NODE_ENV %></h4>
+      </div>
+    </div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>
