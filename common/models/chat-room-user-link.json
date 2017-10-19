@@ -8,7 +8,7 @@
   "properties": {
     "lastObtentionMsgTime": {
       "type": "date",
-      "required": true
+      "required": false
     },
     "status": {
       "type": "boolean",

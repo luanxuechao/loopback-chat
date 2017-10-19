@@ -15,7 +15,7 @@
     },
     "creatorId": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "createdAt": {
       "type": "date",

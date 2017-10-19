@@ -33,7 +33,7 @@ boot(app, __dirname, function(err) {
   // start the server if `$ node server.js`
   // if (require.main === module)
   app.io = require('socket.io')(app.start());
-  // app.io.adapter(redis({ host: 'localhost', port: 6379 }));
+   app.io.adapter(redis({ host: 'localhost', port: 6379 }));
   app.io.set('transports', ['websocket']);
   socketHandler(app);
 });
