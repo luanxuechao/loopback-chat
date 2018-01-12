@@ -1,0 +1,35 @@
+{
+  "name": "BlogUser",
+  "base": "User",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "nickName": {
+      "type": "string",
+      "required": true
+    },
+    "motto": {
+      "type": "string"
+    },
+    "sex": {
+      "type": "string"
+    },
+    "area": {
+      "type": "string"
+    },
+    "emailVerified": {
+      "type": "string",
+      "required": false
+    },
+    "email": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

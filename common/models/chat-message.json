@@ -26,7 +26,13 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "chatRoom": {
+      "type": "belongsTo",
+      "model": "ChatRoom",
+      "foreignKey": ""
+    }
+  },
   "acls": [],
   "methods": {}
 }
