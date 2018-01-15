@@ -58,5 +58,9 @@
   "BlogUser": {
     "dataSource": "mongo",
     "public": true
+  },
+  "ExtendedAccessToken": {
+    "dataSource": "mongo",
+    "public": false
   }
 }
