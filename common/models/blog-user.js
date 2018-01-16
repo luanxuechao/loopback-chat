@@ -16,7 +16,9 @@ module.exports = function(Bloguser) {
     co(function*() {
       let user = yield function(callback) {
         Bloguser.findOne({
-          mobile: ctx.req.body.mobile
+          where:{
+            mobile: ctx.req.body.mobile
+          }
         }, function(err, user) {
           callback(err, user);
         });
@@ -42,7 +44,6 @@ module.exports = function(Bloguser) {
           cb(null, token);
         });
       };
-      console.log(accessToken);
       user.token = accessToken.id;
       return user;
     }).then(function(value) {
