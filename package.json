@@ -19,6 +19,7 @@
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^5.0.0",
     "loopback-connector-mongodb": "^1.18.1",
+    "loopback-softdelete-include": "^1.0.3",
     "path": "^0.12.7",
     "serve-favicon": "^2.0.1",
     "socket.io": "^2.0.3",

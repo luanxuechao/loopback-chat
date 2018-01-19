@@ -1,0 +1,54 @@
+{
+  "name": "FriendMessage",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "mixins": {
+    "SoftDelete": true,
+    "Creator": true,
+    "UpdateFilterKey": true,
+    "Sort": true
+  },
+  "properties": {
+    "status": {
+      "type": "string",
+      "required": true,
+      "default": "UNREAD"
+    },
+    "result": {
+      "type": "string",
+      "required": true,
+      "default": "AUTHENTICATION"
+    },
+    "createdAt": {
+      "type": "date",
+      "required": true,
+      "defaultFn": "now"
+    },
+    "creatorId": {
+      "type": "string",
+      "required": true
+    },
+    "creatorType": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "creator": {
+      "type": "hasOne",
+      "model": "BlogUser",
+      "foreignKey": ""
+    },
+    "receiver": {
+      "type": "hasOne",
+      "model": "BlogUser",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

@@ -9,6 +9,8 @@
     "mixins": [
       "loopback/common/mixins",
       "loopback/server/mixins",
+      "../node_modules/loopback-softdelete-include",
+      "../node_modules/loopback-ds-timestamp-mixin",
       "../common/mixins",
       "./mixins"
     ]
@@ -62,5 +64,9 @@
   "ExtendedAccessToken": {
     "dataSource": "mongo",
     "public": false
+  },
+  "FriendMessage": {
+    "dataSource": "mongo",
+    "public": true
   }
 }
