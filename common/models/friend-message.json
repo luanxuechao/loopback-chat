@@ -39,12 +39,12 @@
   "validations": [],
   "relations": {
     "creator": {
-      "type": "hasOne",
+      "type": "belongsTo",
       "model": "BlogUser",
       "foreignKey": ""
     },
     "receiver": {
-      "type": "hasOne",
+      "type": "belongsTo",
       "model": "BlogUser",
       "foreignKey": ""
     }

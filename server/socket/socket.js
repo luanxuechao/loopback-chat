@@ -1,12 +1,14 @@
 'use strict';
 const friendMessageService = require('../../common/services/FriendMessageService');
-
+const Utils = require('../../common/tools/Utils')
+const ObjectId = require('mongodb').ObjectId;
+const pageService = require('../../common/services/PageService')
+const Enums = require('../../common/enums/Enums')
 function socketsHandler(app) {
   let chatMessage = app.models.ChatMessage;
   let chatServer = app.io.of('/chat');
   let ExtendedAccessToken = app.models.ExtendedAccessToken;
   let FriendMessage = app.models.FriendMessage;
-
   function isValid(token, cb) {
     ExtendedAccessToken.resolve(token, function(err, token) {
       if (err) cb(err);
@@ -76,6 +78,52 @@ function socketsHandler(app) {
            cb(err,message);
       });
     });
+    socket.on('getFriendMessages', function(param, cb) {
+      if (Utils.isNlOrUndOrEmpty(param.userId)) {
+        let error = Object.assign(new Error(), {statusCode: 404, code: 'MISSING_PARAMETER', message: '缺少站内信必要信息'});
+         return cb && cb(error);
+      }
+      let where ={
+        or: [{receiverId: ObjectId(param.userId)}, {creatorId: ObjectId(param.userId)}]
+      };
+      let include = ['creator','receiver'];
+      pageService.find(FriendMessage, where, include,param.pageNo, param.pageSize, function(err,result){
+        if(err) return cb && cb(err);
+        cb && cb(null,result);
+      })
+    });
+    socket.on('readFriendMessages', function(param, cb) {
+      if (Utils.isNlOrUndOrEmpty(param.userId)) {
+        let error = Object.assign(new Error(), {statusCode: 404, code: 'MISSING_PARAMETER', message: '缺少站内信必要信息'});
+        cb && cb(error);
+      } else {
+        FriendMessage.updateAll({
+          receiverId: ObjectId(param.userId),
+        }, {status: Enums.MessageStatus.READ}, function(err, messages) {
+          if (err) {
+            cb && cb(err);
+          } else {
+            cb && cb(null, messages);
+          }
+        });
+      }
+    });
+    socket.on('unReadFriendMessageCount',function(params,cb){
+      if (Utils.isNlOrUndOrEmpty(params.userId)) {
+        let error = Object.assign(new Error(), {statusCode: 404, code: 'MISSING_PARAMETER', message: '缺少站内信必要信息'});
+         return cb && cb(error);
+      }
+      FriendMessage.count({
+        status: Enums.MessageStatus.UNREAD,
+        receiverId: ObjectId(params.userId)
+      },function(err, count) {
+        if (err) {
+          cb && cb(err);
+        } else {
+          cb && cb(null, {count:count});
+        }
+      });
+    })
     socket.on('message', function(message, cb) {
       chatMessage.create({
           'messageContent': message.messageContent,

@@ -10,7 +10,19 @@ module.exports ={
       if(!receiverUser){
         throw Object.assign(new Error(), {statusCode: 404, code: 'MODEL_NOT_FOUND', message: '添加的好友不存在'});
       }
-      let friendMessage ={
+      let friendMessage = yield function(callback){
+        app.models.FriendMessage.findOne({
+          where:{
+            receiverId:receiverUser.id,
+            creatorId:sendUserId
+          }
+        },callback)
+      }
+      if(friendMessage){
+        app.io.of('/chat').to(receiverMobile).emit('newFriend', friendMessage);
+        return friendMessage
+      };
+       friendMessage ={
         receiverId:receiverUser.id,
         receiverType:sendUserType
       }
