@@ -4,11 +4,13 @@ const Utils = require('../../common/tools/Utils')
 const ObjectId = require('mongodb').ObjectId;
 const pageService = require('../../common/services/PageService')
 const Enums = require('../../common/enums/Enums')
+
 function socketsHandler(app) {
   let chatMessage = app.models.ChatMessage;
   let chatServer = app.io.of('/chat');
   let ExtendedAccessToken = app.models.ExtendedAccessToken;
   let FriendMessage = app.models.FriendMessage;
+
   function isValid(token, cb) {
     ExtendedAccessToken.resolve(token, function(err, token) {
       if (err) cb(err);
@@ -74,32 +76,46 @@ function socketsHandler(app) {
       });
     });
     socket.on('addFriend', function(param, cb) {
-      friendMessageService.sendFriendMessage(app,param.userId,param.userType,param.mobile,function(err,message){
-           cb(err,message);
+      friendMessageService.sendFriendMessage(app, param.userId, param.userType, param.mobile, function(err, message) {
+        cb(err, message);
       });
     });
     socket.on('getFriendMessages', function(param, cb) {
       if (Utils.isNlOrUndOrEmpty(param.userId)) {
-        let error = Object.assign(new Error(), {statusCode: 404, code: 'MISSING_PARAMETER', message: '缺少站内信必要信息'});
-         return cb && cb(error);
+        let error = Object.assign(new Error(), {
+          statusCode: 404,
+          code: 'MISSING_PARAMETER',
+          message: '缺少站内信必要信息'
+        });
+        return cb && cb(error);
       }
-      let where ={
-        or: [{receiverId: ObjectId(param.userId)}, {creatorId: ObjectId(param.userId)}]
+      let where = {
+        or: [{
+          receiverId: ObjectId(param.userId)
+        }, {
+          creatorId: ObjectId(param.userId)
+        }]
       };
-      let include = ['creator','receiver'];
-      pageService.find(FriendMessage, where, include,param.pageNo, param.pageSize, function(err,result){
-        if(err) return cb && cb(err);
-        cb && cb(null,result);
+      let include = ['creator', 'receiver'];
+      pageService.find(FriendMessage, where, include, param.pageNo, param.pageSize, function(err, result) {
+        if (err) return cb && cb(err);
+        cb && cb(null, result);
       })
     });
     socket.on('readFriendMessages', function(param, cb) {
       if (Utils.isNlOrUndOrEmpty(param.userId)) {
-        let error = Object.assign(new Error(), {statusCode: 404, code: 'MISSING_PARAMETER', message: '缺少站内信必要信息'});
+        let error = Object.assign(new Error(), {
+          statusCode: 404,
+          code: 'MISSING_PARAMETER',
+          message: '缺少站内信必要信息'
+        });
         cb && cb(error);
       } else {
         FriendMessage.updateAll({
           receiverId: ObjectId(param.userId),
-        }, {status: Enums.MessageStatus.READ}, function(err, messages) {
+        }, {
+          status: Enums.MessageStatus.READ
+        }, function(err, messages) {
           if (err) {
             cb && cb(err);
           } else {
@@ -108,19 +124,25 @@ function socketsHandler(app) {
         });
       }
     });
-    socket.on('unReadFriendMessageCount',function(params,cb){
+    socket.on('unReadFriendMessageCount', function(params, cb) {
       if (Utils.isNlOrUndOrEmpty(params.userId)) {
-        let error = Object.assign(new Error(), {statusCode: 404, code: 'MISSING_PARAMETER', message: '缺少站内信必要信息'});
-         return cb && cb(error);
+        let error = Object.assign(new Error(), {
+          statusCode: 404,
+          code: 'MISSING_PARAMETER',
+          message: '缺少站内信必要信息'
+        });
+        return cb && cb(error);
       }
       FriendMessage.count({
         status: Enums.MessageStatus.UNREAD,
         receiverId: ObjectId(params.userId)
-      },function(err, count) {
+      }, function(err, count) {
         if (err) {
           cb && cb(err);
         } else {
-          cb && cb(null, {count:count});
+          cb && cb(null, {
+            count: count
+          });
         }
       });
     })
@@ -137,6 +159,19 @@ function socketsHandler(app) {
           });
         });
     });
+    socket.on('resolveFriendMessage', function(message, cb) {
+      if (Utils.isNlOrUndOrEmpty(message.messageId) || Utils.isNlOrUndOrEmpty(message.prompt)) {
+        let error = Object.assign(new Error(), {
+          statusCode: 404,
+          code: 'MISSING_PARAMETER',
+          message: '缺少必要信息'
+        });
+        return cb && cb(error);
+      }
+      friendMessageService.resolveFriendMessage(app, message, function(err, message) {
+        cb(err, message);
+      });
+    })
   });
 
 }
