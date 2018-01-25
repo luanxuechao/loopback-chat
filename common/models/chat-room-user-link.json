@@ -29,7 +29,7 @@
     },
     "chatUser": {
       "type": "belongsTo",
-      "model": "ChatUser",
+      "model": "BlogUser",
       "foreignKey": ""
     }
   },

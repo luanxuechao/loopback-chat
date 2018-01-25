@@ -5,14 +5,16 @@
   "options": {
     "validateUpsert": true
   },
+  "mixins": {
+    "SoftDelete": true,
+    "Creator": true,
+    "UpdateFilterKey": true,
+    "Sort": true
+  },
   "hidden": [
     "creatorId"
   ],
   "properties": {
-    "name": {
-      "type": "string",
-      "required": true
-    },
     "creatorId": {
       "type": "string",
       "required": false
@@ -34,7 +36,7 @@
     },
     "chatUsers": {
       "type": "hasMany",
-      "model": "ChatUser",
+      "model": "BlogUser",
       "foreignKey": "",
       "through": "ChatRoomUserLink"
     }

@@ -40,6 +40,12 @@
       "options": {
         "disableInclude": true
       }
+    },
+    "chatRooms": {
+      "type": "hasMany",
+      "model": "ChatRoom",
+      "foreignKey": "",
+      "through": "ChatRoomUserLink"
     }
   },
   "acls": [],
