@@ -31,7 +31,7 @@ module.exports = function(Chatroom) {
             neq:userId
           }
         },
-        include: {
+        include: [{
           relation: 'chatRoom',
           scope: {
             include: [{
@@ -43,7 +43,7 @@ module.exports = function(Chatroom) {
               }
             }]
           }
-        }
+        },{relation: 'chatUser'}]
       },callback);
       }
       return chatRoomlinks;
