@@ -43,6 +43,16 @@ module.exports = {
       friendMessage = yield function(callback) {
         app.models.FriendMessage.create(friendMessage, options, callback);
       }
+      friendMessage = yield function(callback) {
+        app.models.FriendMessage.findOne({
+          where: {
+            receiverId: receiverUser.id,
+            creatorId: sendUserId,
+            result: Enums.MessageResult.AUTHENTICATION
+          },
+          include: 'creator'
+        }, callback)
+      }
       app.io.of('/chat').to(receiverMobile).emit('newFriend', friendMessage);
       return friendMessage
     }).then(function(value) {
