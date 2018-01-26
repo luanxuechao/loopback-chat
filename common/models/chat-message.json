@@ -31,6 +31,10 @@
       "type": "belongsTo",
       "model": "ChatRoom",
       "foreignKey": ""
+    },
+    "sender": {
+      "type": "belongsTo",
+      "polymorphic": true
     }
   },
   "acls": [],

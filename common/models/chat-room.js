@@ -31,7 +31,19 @@ module.exports = function(Chatroom) {
             neq:userId
           }
         },
-        include:['chatRoom','chatUser']
+        include: {
+          relation: 'chatRoom',
+          scope: {
+            include: [{
+              relation: 'chatMessages',
+              scope: {
+                order: 'createdAt DESC',
+                limit: 1,
+                include: 'sender'
+              }
+            }]
+          }
+        }
       },callback);
       }
       return chatRoomlinks;
