@@ -3,6 +3,7 @@ const blogUserService = require('./BlogUserService');
 const co = require('co');
 const Enums = require('../enums/Enums')
 const ObjectId = require('mongodb').ObjectId;
+const chatRoomService = require('./ChatRoomService');
 module.exports = {
   sendFriendMessage: function(app, sendUserId, sendUserType, receiverMobile, cb) {
     co(function*() {
@@ -16,6 +17,24 @@ module.exports = {
           message: '添加的好友不存在'
         });
       }
+      if(sendUserId.toString() == receiverUser.id.toString()){
+        throw Object.assign(new Error(), {
+          statusCode: 403,
+          code: 'FORBIDDEN',
+          message: '不能添加自己为好友'
+        });
+      }
+      let isFriend = yield function(callback){
+        chatRoomService.isFriend(app,sendUserId,receiverUser.id,callback)
+      }
+      if(isFriend){
+        throw Object.assign(new Error(), {
+          statusCode: 403,
+          code: 'FORBIDDEN',
+          message: '你们已经是好友'
+        });
+      }
+
       let friendMessage = yield function(callback) {
         app.models.FriendMessage.findOne({
           where: {
@@ -99,10 +118,12 @@ module.exports = {
         };
         let chatRoomUserLinks = [{
           chatRoomId: chatRoom.id,
-          chatUserId: friendMessage.creatorId
+          chatUserId: friendMessage.creatorId,
+          remark:friendMessage.creator().nickName
         }, {
           chatRoomId: chatRoom.id,
-          chatUserId: friendMessage.receiverId
+          chatUserId: friendMessage.receiverId,
+          remark: friendMessage.receiver().nickName
         }]
         chatRoomUserLinks = yield function(callback) {
           app.models.ChatRoomUserLink.create(chatRoomUserLinks, callback);

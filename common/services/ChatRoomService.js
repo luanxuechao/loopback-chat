@@ -1,6 +1,5 @@
 'use strict';
 var baseDate = new Date('1970-01-01');
-var app = require('../../server/server');
 
 module.exports = {
   // 获取聊天室id
@@ -28,13 +27,20 @@ module.exports = {
     }
     return baseDate;
   },
-  // 修改获取消息最后时间
-  updatelastObtain: function(userId) {
+  isFriend: function(app,sendUserId,receiverUserId,cb){
     var ChatRoomUserLink = app.models.ChatRoomUserLink;
-    ChatRoomUserLink.updateAll({chatUserId: userId},
-      {'lastObtentionMsgTime': new Date()},
-      function(err, ChatRoomUserLink) {
-        if (err) throw err;
-      });
+    ChatRoomUserLink.find({where:{
+      chatUserId:{inq:[sendUserId,receiverUserId]}
+    }},function(err,links){
+      if(err) cb(err);
+      for(let i=0;i<links.length; i++){
+        for(let j=i+1;j<links.length;j++){
+          if(links[i].chatRoomId.toString() == links[j].chatRoomId.toString()){
+            return cb(null,true);
+          }
+        }
+      }
+      return cb(null,false)
+    })
   }
 };

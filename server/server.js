@@ -14,7 +14,7 @@ app.set('json spaces', 2); // format json responses for easier viewing
 
 app.start = function() {
   // start the web server
-  return app.listen(function() {
+  var res = app.listen(function() {
     app.emit('started');
     var baseUrl = app.get('url').replace(/\/$/, '');
     console.log('Web server listening at: %s', baseUrl);
@@ -23,6 +23,11 @@ app.start = function() {
       console.log('Browse your REST API at %s%s', baseUrl, explorerPath);
     }
   });
+  app.io = require('socket.io')(res);
+  app.io.adapter(redis({ host: 'localhost', port: 6379 }));
+  app.io.set('transports', ['websocket']);
+  socketHandler(app);
+  return res;
 };
 
 // Bootstrap the application, configure models, datasources and middleware.
@@ -31,9 +36,10 @@ boot(app, __dirname, function(err) {
   if (err) throw err;
 
   // start the server if `$ node server.js`
-  // if (require.main === module)
-  app.io = require('socket.io')(app.start());
-   app.io.adapter(redis({ host: 'localhost', port: 6379 }));
-  app.io.set('transports', ['websocket']);
-  socketHandler(app);
+  if (require.main === module)
+  app.start()
+  // app.io = require('socket.io')(app.start());
+  // app.io.adapter(redis({ host: 'localhost', port: 6379 }));
+  // app.io.set('transports', ['websocket']);
+  // socketHandler(app);
 });
