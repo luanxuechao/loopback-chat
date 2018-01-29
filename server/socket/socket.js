@@ -91,9 +91,11 @@ function socketsHandler(app) {
       }
       let where = {
         or: [{
-          receiverId: ObjectId(param.userId)
+          receiverId: ObjectId(param.userId),
+          receiverDeleted:false
         }, {
-          creatorId: ObjectId(param.userId)
+          creatorId: ObjectId(param.userId),
+          creatorDeleted:false
         }]
       };
       let include = ['creator', 'receiver'];

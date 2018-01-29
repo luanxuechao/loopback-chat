@@ -40,7 +40,8 @@ module.exports = {
           where: {
             receiverId: receiverUser.id,
             creatorId: sendUserId,
-            result: Enums.MessageResult.AUTHENTICATION
+            result: Enums.MessageResult.AUTHENTICATION,
+            receiverDeleted:false,
           },
           include: 'creator'
         }, callback)

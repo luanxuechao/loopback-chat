@@ -6,7 +6,6 @@
     "validateUpsert": true
   },
   "mixins": {
-    "SoftDelete": true,
     "Creator": true,
     "UpdateFilterKey": true,
     "Sort": true
@@ -34,6 +33,16 @@
     "creatorType": {
       "type": "string",
       "required": true
+    },
+    "receiverDeleted":{
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "creatorDeleted":{
+      "type": "boolean",
+      "required": true,
+      "default": false
     }
   },
   "validations": [],
