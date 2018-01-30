@@ -1,22 +1,11 @@
 {
-  "name": "ChatMessage",
+  "name": "ChatMessageUserLink",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "messageContent": {
-      "type": "string",
-      "required": true
-    },
-    "chatRoomId": {
-      "type": "string",
-      "required": true
-    },
-    "remark": {
-      "type": "string"
-    },
     "createdAt": {
       "type": "date",
       "defaultFn": "now"
@@ -24,26 +13,28 @@
     "updatedAt": {
       "type": "date"
     },
-    "messageType": {
+    "status": {
       "type": "string",
-      "required": true
+      "required": true,
+      "defautlt": "UNREAD"
     }
   },
   "validations": [],
   "relations": {
+    "chatMessage": {
+      "type": "belongsTo",
+      "model": "ChatMessage",
+      "foreignKey": ""
+    },
+    "blogUser": {
+      "type": "belongsTo",
+      "model": "BlogUser",
+      "foreignKey": ""
+    },
     "chatRoom": {
       "type": "belongsTo",
       "model": "ChatRoom",
       "foreignKey": ""
-    },
-    "blogUsers": {
-      "type": "hasMany",
-      "model": "BlogUser",
-      "through": "ChatMessageUserLink"
-    },
-    "sender": {
-      "type": "belongsTo",
-      "polymorphic": true
     }
   },
   "acls": [],

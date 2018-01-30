@@ -1,7 +1,8 @@
 'use strict';
-var co = require('co');
-var chatUserService = require('../services/ChatUserService');
-var chatRoomService = require('../services/ChatRoomService.js');
+const co = require('co');
+const chatUserService = require('../services/ChatUserService');
+const chatRoomService = require('../services/ChatRoomService.js');
+const ObjectId = require('mongodb').ObjectId;
 module.exports = function(Chatroom) {
   Chatroom.getChatRoom = function(req, cb) {
     co(function*() {
@@ -65,4 +66,78 @@ module.exports = function(Chatroom) {
       returns: {arg: 'body', type: 'object', root: true}
     }
   );
+
+    // 查询通过本地消息记录时间历史消息
+    Chatroom.getHistoryMessageWithDate =
+    function(chatRoomId, createdAt, limit, req, cb) {
+      let userId = req.accessToken.userId;
+      let Chatmessage = Chatroom.app.models.ChatMessage;
+      let ChatRoomUserLink = Chatroom.app.models.ChatRoomUserLink;
+      co(function* () {
+        let userLink = yield function(callback) {
+          ChatRoomUserLink.findOne({
+            where: {
+              chatUserId: userId,
+              chatRoomId: ObjectId(chatRoomId)
+            }
+          }, function(err, link) {
+            if (err) return callback(err);
+            callback(null, link);
+          });
+        };
+        if (!userLink) {
+          throw Object.assign(new Error(), {statusCode: 404, code: 'USER_NOT_FOUND', message: '你不在该聊天室'});
+        }
+        let chatmessages = null;
+        if (createdAt) {
+          chatmessages = yield function(callback) {
+            Chatmessage.find({
+              where: {
+                chatRoomId: chatRoomId,
+                createdAt: {'lte': new Date(parseInt(createdAt))}
+              },
+              limit: limit,
+              include: ['sender'],
+              order: 'createdAt DESC'
+            }, {include: ['BlogUser']},function(err, chatmessages) {
+              if (err) return callback(err);
+              callback(null, chatmessages);
+            });
+          };
+        } else {
+          chatmessages = yield function(callback) {
+            Chatmessage.find({
+              where: {chatRoomId: chatRoomId},
+              limit: limit,
+              include: ['sender'],
+              order: 'createdAt DESC'
+            }, {include: ['ProviderUser','ContractorUser']},function(err, chatmessages) {
+              if (err) cb(err);
+              cb(err, chatmessages);
+            });
+          };
+        }
+        return chatmessages;
+      }).then(function(value) {
+        cb(null, value);
+      }).catch(function(err) {
+        cb(err);
+      });
+    };
+  Chatroom.remoteMethod(
+    'getHistoryMessageWithDate', {
+      http: {
+        path: '/:id/ChatMessages/HistoryMessage',
+        verb: 'get'
+      },
+      accepts: [
+        {arg: 'id', type: 'string', http: {source: 'path'}},
+        {arg: 'createdAt', type: 'string', http: {source: 'query'}},
+        {arg: 'limit', type: 'string', http: {source: 'query'}},
+        {arg: 'req', type: 'object', http: {source: 'req'}}
+      ],
+      returns: {arg: 'body', type: 'object', root: true}
+    }
+  );
+
 };

@@ -4,12 +4,15 @@ const Utils = require('../../common/tools/Utils')
 const ObjectId = require('mongodb').ObjectId;
 const pageService = require('../../common/services/PageService')
 const Enums = require('../../common/enums/Enums')
+const chatService = require('../../common/services/ChatService')
 
 function socketsHandler(app) {
   let chatMessage = app.models.ChatMessage;
   let chatServer = app.io.of('/chat');
   let ExtendedAccessToken = app.models.ExtendedAccessToken;
   let FriendMessage = app.models.FriendMessage;
+  let ChatRoomUserLink = app.models.ChatRoomUserLink;
+  let ChatRoom = app.models.ChatRoom;
 
   function isValid(token, cb) {
     ExtendedAccessToken.resolve(token, function(err, token) {
@@ -62,18 +65,29 @@ function socketsHandler(app) {
     socket.join(socket.handshake.query.mobile, function() {
       return;
     });
+    socket.on('joinRooms', function(param, cb) {
+      if (Utils.isNlOrUndOrEmpty(param.userId)) {
+        let error = Object.assign(new Error(), {statusCode: 404, code: 'MISSING_PARAMETER', message: '缺少必要信息'});
+        cb && cb(error);
+      }
+      ChatRoomUserLink.find({
+        where: {chatUserId: ObjectId(param.userId)},
+        fields: ['chatRoomId']
+      }, function(err, roomLinks) {
+        if (err) {
+          cb && cb(err);
+        } else {
+          let rooms = roomLinks.map(function(roomLink) {
+            return roomLink.chatRoomId.toString();
+          });
+          socket.join(rooms, function() {
+            cb && cb(null, true);
+          });
+        };
+      });
+    });
     socket.on('disconnect', function() {
       console.log('user disconnected');
-    });
-    socket.on('joinRoom', function(roomId, cb) {
-      socket.join(roomId, function() {
-        cb(true);
-      });
-    });
-    socket.on('joinRooms', function(rooms, cb) {
-      socket.join(rooms, function() {
-        cb(true);
-      });
     });
     socket.on('addFriend', function(param, cb) {
       friendMessageService.sendFriendMessage(app, param.userId, param.userType, param.mobile, function(err, message) {
@@ -149,17 +163,21 @@ function socketsHandler(app) {
       });
     })
     socket.on('message', function(message, cb) {
-      chatMessage.create({
-          'messageContent': message.messageContent,
-          'userId': message.userId,
-          'chatRoomId': message.chatRoomId
-        },
-        function(err, message) {
-          chatMessage.findById(message.id, function(err, data) {
-            socket.to(data.chatRoomId).emit('message', data);
-            cb(data);
-          });
+      if (Utils.isNlOrUndOrEmpty(message.messageContent) || Utils.isNlOrUndOrEmpty(message.userId) || Utils.isNlOrUndOrEmpty(message.chatRoomId) || Utils.isNlOrUndOrEmpty(message.messageType) || Utils.isNlOrUndOrEmpty(message.userType)) {
+        let error = Object.assign(new Error(), {statusCode: 404, code: 'MISSING_PARAMETER', message: '缺少消息必要信息'});
+        cb && cb(error);
+      } else {
+        chatService.sendChatMessage(chatMessage.app, message, (err, data) => {
+          if (err) {
+            cb && cb(err);
+          } else {
+            chatMessage.findById(data.id, {include: 'sender'}, (err, messageModel)=>{
+              socket.to(messageModel.chatRoomId).emit('message', messageModel);
+              cb && cb(null, messageModel);
+            });
+          }
         });
+      }
     });
     socket.on('resolveFriendMessage', function(message, cb) {
       if (Utils.isNlOrUndOrEmpty(message.messageId) || Utils.isNlOrUndOrEmpty(message.prompt)) {
@@ -173,7 +191,29 @@ function socketsHandler(app) {
       friendMessageService.resolveFriendMessage(app, message, function(err, message) {
         cb(err, message);
       });
-    })
+    });
+     // 获取历史消息
+     socket.on('getHistoryMessage', function(param, cb) {
+      if (Utils.isNlOrUndOrEmpty(param.chatRoomId)) {
+        let error = Object.assign(new Error(), {statusCode: 404, code: 'MISSING_PARAMETER', message: '缺少必要信息'});
+        cb && cb(error);
+      } else {
+        if (!param.limit) {
+          param.limit = 5;
+        }
+          param.accessToken={
+            userId:ObjectId(param.userId),
+            principalType:param.userType
+        }
+        ChatRoom.getHistoryMessageWithDate(param.chatRoomId, param.createdAt, param.limit, param,function(err, data) {
+          if (err) {
+            cb && cb(err);
+          } else {
+            cb &&cb(null, data);
+          }
+        });
+      }
+    });
   });
 
 }

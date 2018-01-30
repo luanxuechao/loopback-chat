@@ -68,5 +68,9 @@
   "FriendMessage": {
     "dataSource": "mongo",
     "public": true
+  },
+  "ChatMessageUserLink": {
+    "dataSource": "mongo",
+    "public": false
   }
 }
