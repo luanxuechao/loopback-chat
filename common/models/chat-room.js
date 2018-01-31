@@ -9,6 +9,7 @@ module.exports = function(Chatroom) {
       let userId = req.accessToken.userId;
       let UserModel = Chatroom.app.models[req.accessToken.principalType];
       let ChatRoomUserLink = Chatroom.app.models.ChatRoomUserLink;
+      let ChatMessageUserLink = Chatroom.app.models.ChatMessageUserLink;
       let links = yield function(callback) {
         ChatRoomUserLink.find({
           where: {
@@ -47,6 +48,16 @@ module.exports = function(Chatroom) {
         },{relation: 'chatUser'}]
       },callback);
       }
+      let unReadMessages = yield function(callback) {
+        ChatMessageUserLink.find({
+          where: {blogUserId: userId, status: 'UNREAD'},
+          include: ['chatMessage']
+        }, function(err, unReadMessages) {
+          if (err) return callback(err);
+          callback(null, unReadMessages);
+        });
+      };
+      chatRoomlinks = chatRoomService.filterUnReadMessages(chatRoomlinks, unReadMessages);
       return chatRoomlinks;
     }).then(function(value){
       cb(null,value);

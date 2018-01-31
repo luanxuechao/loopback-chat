@@ -42,5 +42,17 @@ module.exports = {
       }
       return cb(null,false)
     })
-  }
+  },
+    // 过滤每个ChatRoom 未读消息数
+    filterUnReadMessages: function(chatRooms, UnReadMessages) {
+      for (let i = 0; i <= chatRooms.length - 1; i++) {
+        chatRooms[i].UnReadMessagesNum = 0;
+        for (let k = 0; k <= UnReadMessages.length - 1; k++) {
+          if (chatRooms[i].chatRoomId.toString() == UnReadMessages[k].chatMessage().chatRoomId.toString()) {
+            chatRooms[i].UnReadMessagesNum++;
+          }
+        }
+      }
+      return chatRooms;
+    },
 };
