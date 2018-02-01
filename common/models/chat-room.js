@@ -105,7 +105,7 @@ module.exports = function(Chatroom) {
             Chatmessage.find({
               where: {
                 chatRoomId: chatRoomId,
-                createdAt: {'lte': new Date(parseInt(createdAt))}
+                createdAt: {'lt': new Date(parseInt(createdAt))}
               },
               limit: limit,
               include: ['sender'],
