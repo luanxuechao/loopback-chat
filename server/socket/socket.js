@@ -13,7 +13,7 @@ function socketsHandler(app) {
   let FriendMessage = app.models.FriendMessage;
   let ChatRoomUserLink = app.models.ChatRoomUserLink;
   let ChatRoom = app.models.ChatRoom;
-
+  let ChatMessageUserLink =  app.models.ChatMessageUserLink;
   function isValid(token, cb) {
     ExtendedAccessToken.resolve(token, function(err, token) {
       if (err) cb(err);
@@ -93,6 +93,40 @@ function socketsHandler(app) {
       friendMessageService.sendFriendMessage(app, param.userId, param.userType, param.mobile, function(err, message) {
         cb(err, message);
       });
+    });
+     // 标记消息已读
+     socket.on('readChatMessage', function(message, cb) {
+      if (Utils.isNlOrUndOrEmpty(message.userId) || Utils.isNlOrUndOrEmpty(message.chatRoomId)) {
+        let error = Object.assign(new Error(), {statusCode: 404, code: 'MISSING_PARAMETER', message: '缺少消息必要信息'});
+        cb && cb(error);
+      } else {
+        if (message.id) {
+          ChatMessageUserLink.updateAll({
+            chatMessageId: ObjectId(message.id),
+            blogUserId: ObjectId(message.userId),
+            chatRoomId: ObjectId(message.chatRoomId),
+          }, {status: Enums.MessageStatus.READ}, function(err, userMessageLink) {
+            if (err) {
+              cb && cb(err);
+            } else {
+              cb && cb(null, userMessageLink);
+            }
+          });
+        } else {
+          ChatMessageUserLink.updateAll({
+            blogUserId: ObjectId(message.userId),
+            chatRoomId: ObjectId(message.chatRoomId),
+            createdAt: {lte: new Date()},
+            status: Enums.MessageStatus.UNREAD
+          }, {status: Enums.MessageStatus.READ}, function(err, ChatMessageUserLinks) {
+            if (err) {
+              cb && cb(err);
+            } else {
+              cb && cb(null, ChatMessageUserLinks);
+            }
+          });
+        }
+      }
     });
     socket.on('getFriendMessages', function(param, cb) {
       if (Utils.isNlOrUndOrEmpty(param.userId)) {
