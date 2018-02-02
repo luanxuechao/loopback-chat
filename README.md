@@ -6,6 +6,10 @@
 
 这是一个运用前端框架VueJS,UI框架Iview的博客项目,后端使用Node框架LoopBack,前端传送门。[这里](https://github.com/luanxuechao/vue-blog)
 
+
+## 演示
+![](https://github.com/luanxuechao/vue-blog/blob/master/demo/demo.gif?raw=true)
+
 ## 快速开始
 
 ``` bash
