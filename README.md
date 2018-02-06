@@ -20,10 +20,53 @@ npm install
 node .
 
 ```
+## docker build / docker-compose
+
+### 本镜像使用了以下基础镜像:
+- monogo:3.4.8
+- redis:4.0.1
+
+### 本地开发环境下使用前的准备工作
+
+在命令行运行以下命令创建需要的宿主数据卷(Volumes)，并赋予权限：
+```
+$ sudo mkdir /srv && sudo mkdir /srv/docker
+$ sudo mkdir /srv/docker/chat
+$ sudo chown yourusername:yourusergroup /srv/docker/
+```
+本地 MacOs 开发环境下，请至 Docker Preferences 选中 File Sharing 标签页，
+添加绑定的本地数据卷 `/srv/docker`
+
+1. mongodb 的数据将会被保存在 /srv/docker/chat/mongo
+2. redis 的数据将会被保存在 /srv/docker/chat/redis
+
+###  docker build 镜像
+请确保 Docker 监护进程在运行中，至本文件夹目录下，同时在命令行运行以下命令启动：
+``` bash
+docker build -t chat-node ./
+```
+###  docker-compose build 镜像
+请确保 Docker 监护进程在运行中，至本文件夹目录下，同时在命令行运行以下命令启动：
+``` bash
+docker-compose build
+```
+
+## 运行 docker-compose
+
+请确保 Docker 监护进程在运行中，至本文件夹目录下，同时在命令行运行以下命令启动：
+```
+$ docker-compose up
+```
+
+或运行以下命令结束服务：
+```
+$ docker-compose down
+```
+
 ## 技术栈
 - socket.io
 - loopback
-
+- docker
 ## 数据库
 - mongo
 - redis

@@ -5,5 +5,3 @@ services:
     build: .
     environment:
       - NODE_ENV=development
-    volumes:
-      - '.:/home/app'
