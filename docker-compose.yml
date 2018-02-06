@@ -15,14 +15,14 @@ services:
     command:
       - --loglevel warning
     volumes:
-      - /srv/docker/ncwz/redis:/var/lib/redis:Z
+      - /srv/docker/chat/redis:/var/lib/redis:Z
     ports:
       - "6379:6379"
   mongo:
     image: mongo:3.4.8
     restart: always
     volumes:
-      - /srv/docker/ncwz/mongo:/data/db:Z
+      - /srv/docker/chat/mongo:/data/db:Z
     ports:
       - "27017:27017"
 
