@@ -4,7 +4,7 @@
     "connector": "memory"
   },
   "mongo": {
-    "host": "localhost",
+    "host": "mongo",
     "port": 27017,
     "url": "",
     "database": "chatTest",
@@ -12,5 +12,11 @@
     "name": "mongo",
     "user": "",
     "connector": "mongodb"
+  },
+  "redisDs": {
+    "host": "redis",
+    "port": 6379,
+    "name": "redisDs",
+    "connector": "redis"
   }
 }

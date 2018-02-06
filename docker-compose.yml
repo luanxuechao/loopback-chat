@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  chat:
+    image: chat-node
+    container_name: chat_api
+    restart: always
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "3001:3001"
+  redis:
+    image: redis:4.0.1
+    restart: always
+    command:
+      - --loglevel warning
+    volumes:
+      - /srv/docker/ncwz/redis:/var/lib/redis:Z
+    ports:
+      - "6379:6379"
+  mongo:
+    image: mongo:3.4.8
+    restart: always
+    volumes:
+      - /srv/docker/ncwz/mongo:/data/db:Z
+    ports:
+      - "27017:27017"
+

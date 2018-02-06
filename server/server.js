@@ -24,7 +24,7 @@ app.start = function() {
     }
   });
   app.io = require('socket.io')(res);
-  app.io.adapter(redis({ host: 'localhost', port: 6379 }));
+  app.io.adapter(redis(app.datasources.redisDs.settings));
   app.io.set('transports', ['websocket']);
   socketHandler(app);
   return res;
