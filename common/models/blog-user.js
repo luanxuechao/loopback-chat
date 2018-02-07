@@ -53,4 +53,20 @@ module.exports = function(Bloguser) {
       next(err);
     });
   });
+  Bloguser.beforeRemote('replaceById',function(ctx, model, next){
+    co(function*() {
+      delete ctx.req.body.id
+      delete ctx.req.body.mobile
+      let info = yield function(callback){
+        Bloguser.updateAll({id:ctx.req.params.id},ctx.req.body,callback)
+      };
+      return info
+
+    }).then(function(value){
+       ctx.res.send(value);
+       return ctx.res.end();
+    }).catch(function(err){
+      next(err);
+    });
+  });
 };
