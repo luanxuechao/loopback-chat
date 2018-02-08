@@ -2,6 +2,9 @@
 const co = require('co');
 const utils = require('../tools/Utils');
 module.exports = function(Bloguser) {
+  Bloguser.validatesUniquenessOf('mobile', {message: '手机号已存在'});
+  let mobileReg = /^1[3|4|5|7|8|6|9][0-9]{9}$/;
+  Bloguser.validatesFormatOf('mobile', {with: mobileReg, message: '请输入正确的手机号'});
   Bloguser.beforeRemote('create', function(ctx, model, next) {
     console.log(ctx.body);
     next();
