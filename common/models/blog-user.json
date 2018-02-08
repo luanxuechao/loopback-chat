@@ -10,6 +10,11 @@
       "type": "string",
       "required": true
     },
+    "mobile":{
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
     "motto": {
       "type": "string"
     },
